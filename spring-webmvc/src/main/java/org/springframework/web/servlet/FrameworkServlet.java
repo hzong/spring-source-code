@@ -677,7 +677,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 				wac.setId(this.contextId);
 			}
 			else {
-				// Generate default id...
+				// Generate default id...生成默认Id
 				wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
 						ObjectUtils.getDisplayString(getServletContext().getContextPath()) + '/' + getServletName());
 			}
@@ -695,9 +695,12 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		if (env instanceof ConfigurableWebEnvironment) {
 			((ConfigurableWebEnvironment) env).initPropertySources(getServletContext(), getServletConfig());
 		}
-
+		//扩展提交处理方法
 		postProcessWebApplicationContext(wac);
+		//应用初始化
 		applyInitializers(wac);
+
+		//初始化刷新
 		wac.refresh();
 	}
 
@@ -723,6 +726,13 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * <p>Note that this method is designed to allow subclasses to modify the application
 	 * context, while {@link #initWebApplicationContext} is designed to allow
 	 * end-users to modify the context through the use of
+	 * 在给定的WebApplicationContext被刷新并作为servlet的上下文激活之前对其进行后处理。
+	 *
+	 * 默认实现为空。此方法返回后，将自动调用refresh()。
+	 *
+	 * 请注意，此方法被设计为允许子类修改应用程序上下文，
+	 * 而initWebApplicationContext被设计为允许最终用户通过使用applicationcontextinitializer修改上下文
+	 *
 	 * {@link ApplicationContextInitializer}s.
 	 * @param wac the configured WebApplicationContext (not refreshed yet)
 	 * @see #createWebApplicationContext
@@ -739,6 +749,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * <p>See also {@link #postProcessWebApplicationContext}, which is designed to allow
 	 * subclasses (as opposed to end-users) to modify the application context, and is
 	 * called immediately before this method.
+	 *<hr/>
+	 * 在WebApplicationContext被刷新到由"contextInitializerClasses"
+	 * servlet init-param指定的ApplicationContextInitializer实例之前，委托它。
+	 * 另请参阅postProcessWebApplicationContext，它被设计为允许子类(与最终用户相反)修改应用程序上下文，并在此方法之前立即被调用。
 	 * @param wac the configured WebApplicationContext (not refreshed yet)
 	 * @see #createWebApplicationContext
 	 * @see #postProcessWebApplicationContext

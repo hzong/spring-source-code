@@ -35,6 +35,7 @@ import org.springframework.lang.Nullable;
 public interface ConfigurableWebEnvironment extends ConfigurableEnvironment {
 
 	/**
+	 * 使用给定的参数，使用实际servlet上下文/配置属性源使用任何存根属性源实例作为占位符
 	 * Replace any {@linkplain
 	 * org.springframework.core.env.PropertySource.StubPropertySource stub property source}
 	 * instances acting as placeholders with real servlet context/config property sources

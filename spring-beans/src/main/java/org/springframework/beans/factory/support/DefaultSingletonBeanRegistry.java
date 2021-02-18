@@ -566,6 +566,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		}
 
 		// Actually destroy the bean now...
+		//回调org.springframework.beans.factory.DisposableBean 接口，处理各自bean的回调destroy方法
 		if (bean != null) {
 			try {
 				bean.destroy();

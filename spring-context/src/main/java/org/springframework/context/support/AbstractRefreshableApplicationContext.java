@@ -74,7 +74,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	@Nullable
 	private DefaultListableBeanFactory beanFactory;
 
-	/** Synchronization monitor for the internal BeanFactory */
+	/** Synchronization monitor for the internal BeanFactory 内部BeanFactory的同步监视器*/
 	private final Object beanFactoryMonitor = new Object();
 
 
@@ -116,17 +116,25 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 
 
 	/**
+	 * 该实现对该上下文的底层bean工厂执行实际的刷新，关闭前一个bean工厂(如果有的话)，并为上下文生命周期的下一阶段初始化一个新鲜的bean工厂
+	 * <hr/>
+	 *
 	 * This implementation performs an actual refresh of this context's underlying
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		//判断bean工厂是否已经初始化
 		if (hasBeanFactory()) {
+			//如果已存在则注销所有的bean
 			destroyBeans();
+			//关闭所有bean工厂
 			closeBeanFactory();
 		}
 		try {
+			// TODO: 2021-02-18 22:22 hzong
+			//创建bean工厂
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
 			customizeBeanFactory(beanFactory);
@@ -161,10 +169,14 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	}
 
 	/**
+	 *
+	 * 确定该上下文当前是否包含一个bean工厂，即至少刷新了一次，但还没有关闭
+	 * <hr/>
 	 * Determine whether this context currently holds a bean factory,
 	 * i.e. has been refreshed at least once and not been closed yet.
 	 */
 	protected final boolean hasBeanFactory() {
+		//beanFactoryMonitor 监控bean工厂锁，以创建为true
 		synchronized (this.beanFactoryMonitor) {
 			return (this.beanFactory != null);
 		}
@@ -190,6 +202,13 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	}
 
 	/**
+	 *
+	 * 为这个上下文创建一个内部bean工厂。每次刷新()尝试都会调用。
+	 *
+	 * 默认实现创建一个DefaultListableBeanFactory，
+	 * 并将此上下文的父类的内部bean工厂作为父bean工厂。
+	 * 是否可以在子类中覆盖，例如自定义DefaultListableBeanFactory的设置
+	 * <hr/>
 	 * Create an internal bean factory for this context.
 	 * Called for each {@link #refresh()} attempt.
 	 * <p>The default implementation creates a
